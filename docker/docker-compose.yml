@@ -27,8 +27,6 @@ services:
     restart: unless-stopped
     tty: true
     working_dir: /srv/web
-    environment:
-      APP_URL: http://${DOMAIN}:${PORT}
     labels:
       - traefik.enable=true
       - traefik.http.routers.web.rule=Host(`${DOMAIN}`)
@@ -36,22 +34,6 @@ services:
     volumes:
       - ../nuxtapp:/srv/web
       - ${YARN_CACHE_DIR:-~/.cache/yarn}:/tmp/.cache/yarn
-
-  express-backend:
-    image: node:20-alpine
-    restart: unless-stopped
-    command: "npm start"
-    working_dir: /usr/src/app
-    volumes:
-      - ../be:/usr/src/app
-    environment:
-      - NODE_ENV=production
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.express.rule=Host(`${EXPRESS_DOMAIN}`)
-      - traefik.http.services.express.loadbalancer.server.port=3000
-    depends_on:
-      - mariadb
 
   mariadb:
       image: mariadb:10

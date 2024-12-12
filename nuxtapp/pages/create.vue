@@ -3,14 +3,14 @@
         <div class="mx-auto">
             <el-row class="justify-center mb-5">
                 <h2 class="text-md">
-                    Submit your new idea
+                    <Icon name="lucide:lightbulb" />
+                    Submit a new idea
                 </h2>
             </el-row>
-            <el-row class="justify-center">
+            <div class="max-w-[700px]  mx-3 md:mx-auto justify-center">
                 <CreateForm />
-            </el-row>
+            </div>
         </div>
-        <!-- <p>This page will be displayed at the /about route.</p> -->
     </div>
 </template>
 
