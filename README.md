@@ -36,3 +36,4 @@ Open your browser and go to:
 http://playstudios.localhost:8000
 
 Thank you and best regards,
+![image](https://github.com/user-attachments/assets/194fbf37-9da4-4540-9da4-3d5507179ce3)
