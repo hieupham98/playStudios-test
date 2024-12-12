@@ -1,3 +1,20 @@
+<script setup>
+    import CreateForm from './components/Game/CreateForm.vue'
+    import { ref } from 'vue'
+
+    const title = ref('Create idea')
+    const description = ref('Playstudios Game Idea Hub')
+
+    useHead({
+        title,
+        meta: [{
+            name: 'description',
+            content: description
+        }]
+    })
+</script>
+
+
 <template>
     <div class="container">
         <div class="mx-auto">
@@ -14,7 +31,3 @@
     </div>
 </template>
 
-<script setup>
-import CreateForm from './components/Game/CreateForm.vue'
-
-</script>

@@ -3,6 +3,16 @@ import GameItem from './components/Game/Item.vue'
 import Filters from './components/Filters.vue'
 import { ref, watch, onBeforeMount } from 'vue'
 
+const title = ref('Playstudios Game Idea Hub')
+const description = ref('Playstudios Game Idea Hub')
+
+useHead({
+  title,
+  meta: [{
+    name: 'description',
+    content: description
+  }]
+})
 const ideas = ref([])
 const sortByVote = ref('')
 const searchKey = ref('')
