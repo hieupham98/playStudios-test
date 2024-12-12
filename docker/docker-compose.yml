@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:2.8
+    restart: unless-stopped
+    command:
+    - --api.dashboard=true
+    - --entrypoints.http.address=:80
+    - --providers.docker
+    - --providers.docker.network=${COMPOSE_PROJECT_NAME}_frontend
+    - --providers.docker.watch=true
+    - --providers.docker.exposedbydefault=false
+    ports:
+    - ${PORT:-80}:80
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.traefik.rule=Host(`${TRAEFIK_DOMAIN}`)
+    - traefik.http.routers.traefik.service=api@internal
+    - traefik.http.middlewares.traefik-dashboard.redirectRegex.regex=/
+    - traefik.http.middlewares.traefik-dashboard.redirectRegex.replacement=/dashboard/
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+
+  web:
+    image: node:20-alpine
+    restart: unless-stopped
+    tty: true
+    working_dir: /srv/web
+    environment:
+      APP_URL: http://${DOMAIN}:${PORT}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.web.rule=Host(`${DOMAIN}`)
+      - traefik.http.services.web.loadbalancer.server.port=3000
+    volumes:
+      - ../nuxtapp:/srv/web
+      - ${YARN_CACHE_DIR:-~/.cache/yarn}:/tmp/.cache/yarn
+
+  express-backend:
+    image: node:20-alpine
+    restart: unless-stopped
+    command: "npm start"
+    working_dir: /usr/src/app
+    volumes:
+      - ../be:/usr/src/app
+    environment:
+      - NODE_ENV=production
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.express.rule=Host(`${EXPRESS_DOMAIN}`)
+      - traefik.http.services.express.loadbalancer.server.port=3000
+    depends_on:
+      - mariadb
+
+  mariadb:
+      image: mariadb:10
+      restart: always
+      platform: linux/amd64
+      volumes:
+        - ${PATH_DATA:-./data}/mariadb:/var/lib/mysql
+      environment:
+        MYSQL_DATABASE: ${DB_DATABASE}
+        MYSQL_USER: ${DB_USERNAME}
+        MYSQL_PASSWORD: ${DB_PASSWORD}
+        MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      ports:
+        - "3307:3306"
